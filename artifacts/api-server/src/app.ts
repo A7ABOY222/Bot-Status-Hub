@@ -1,10 +1,14 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import session from "express-session";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+
+// Trust reverse proxy (Replit / nginx) so session cookies work over HTTPS
+app.set("trust proxy", 1);
 
 app.use(
   pinoHttp({
@@ -25,9 +29,29 @@ app.use(
     },
   }),
 );
-app.use(cors());
+
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  logger.warn("SESSION_SECRET not set — using insecure fallback. Set it as a secret.");
+}
+
+app.use(
+  session({
+    secret: sessionSecret ?? "dev-fallback-secret-change-me",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "lax",
+    },
+  }),
+);
 
 app.use("/api", router);
 

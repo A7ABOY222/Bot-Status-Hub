@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Leveling Bot API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: bot
+    description: Bot status operations
+  - name: auth
+    description: Authentication operations
+  - name: guilds
+    description: Guild operations
 paths:
   /healthz:
     get:
@@ -24,13 +30,139 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /bot/status:
+    get:
+      operationId: getBotStatus
+      tags: [bot]
+      summary: Get bot status and statistics
+      responses:
+        "200":
+          description: Bot status and stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscordUser"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Log out current user
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /guilds:
+    get:
+      operationId: getGuilds
+      tags: [guilds]
+      summary: Get user guilds with bot presence info
+      responses:
+        "200":
+          description: List of user guilds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Guild"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    BotStatus:
+      type: object
+      required: [online, guildCount, userCount, ping]
+      properties:
+        online:
+          type: boolean
+        guildCount:
+          type: integer
+        userCount:
+          type: integer
+        ping:
+          type: integer
+          description: Bot latency in ms
+        uptime:
+          type: ["number", "null"]
+          description: Uptime in seconds
+
+    DiscordUser:
+      type: object
+      required: [id, username, avatar]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        discriminator:
+          type: ["string", "null"]
+        avatar:
+          type: ["string", "null"]
+        globalName:
+          type: ["string", "null"]
+
+    Guild:
+      type: object
+      required: [id, name, botPresent]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: ["string", "null"]
+        botPresent:
+          type: boolean
+        memberCount:
+          type: ["integer", "null"]
+
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
