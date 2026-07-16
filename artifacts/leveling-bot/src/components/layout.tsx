@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { useGetMe, useLogout } from "@workspace/api-client-react";
+import { useGetMe, useLogout } from "@/lib/api";
 import { Button } from "./ui/button";
 import { LayoutDashboard, LogOut, LogIn, Swords } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";

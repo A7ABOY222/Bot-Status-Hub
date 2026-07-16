@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout";
 import { FadeInUp } from "@/components/animations";
-import { useGetGuilds, getGetGuildsQueryKey, useGetMe } from "@workspace/api-client-react";
+import { useGetGuilds, getGetGuildsQueryKey, useGetMe } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Bot, Settings, Plus, Users, ShieldAlert } from "lucide-react";

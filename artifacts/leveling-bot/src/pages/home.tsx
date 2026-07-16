@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout";
 import { ParticlesBg } from "@/components/particles-bg";
 import { FadeInUp, AnimatedCounter } from "@/components/animations";
 import { Button } from "@/components/ui/button";
-import { useGetBotStatus, getGetBotStatusQueryKey } from "@workspace/api-client-react";
+import { useGetBotStatus, getGetBotStatusQueryKey } from "@/lib/api";
 import { ArrowRight, Trophy, Zap, Bell, Star, Shield, Users, Server, Activity, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
