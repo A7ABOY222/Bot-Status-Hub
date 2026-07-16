@@ -1,15 +1,7 @@
-FROM node:22
-
-WORKDIR /app
-
 RUN corepack enable
+RUN corepack prepare pnpm@10.15.0 --activate
 
 COPY . .
 
 RUN pnpm install
-
-RUN pnpm --filter @workspace/leveling-bot run build
-
-EXPOSE 3000
-
-CMD ["pnpm", "--filter", "@workspace/leveling-bot", "run", "preview"]
+RUN pnpm --filter @workspace/leveling-bot build
