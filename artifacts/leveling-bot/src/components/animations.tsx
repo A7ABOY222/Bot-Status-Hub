@@ -14,33 +14,32 @@ export function AnimatedCounter({ value, duration = 2, formatter = (v) => v.toLo
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   useEffect(() => {
-    if (inView) {
-      let start = 0;
-      const end = value;
-      if (start === end) return;
-      
-      const totalMilSecDur = duration * 1000;
-      const incrementTime = 16;
-      const totalSteps = Math.ceil(totalMilSecDur / incrementTime);
-      let step = 0;
+    if (!inView) return;
 
-      const easeOutQuad = (t: number) => t * (2 - t);
+    const end = value;
+    if (end === 0) return;
 
-      const timer = setInterval(() => {
-        step++;
-        const progress = step / totalSteps;
-        const currentCount = Math.round(start + (end - start) * easeOutQuad(progress));
-        
-        if (step >= totalSteps) {
-          setCount(end);
-          clearInterval(timer);
-        } else {
-          setCount(currentCount);
-        }
-      }, incrementTime);
+    const totalMilSecDur = duration * 1000;
+    const incrementTime = 16;
+    const totalSteps = Math.ceil(totalMilSecDur / incrementTime);
+    let step = 0;
 
-      return () => clearInterval(timer);
-    }
+    const easeOutQuad = (t: number) => t * (2 - t);
+
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / totalSteps;
+      const currentCount = Math.round(end * easeOutQuad(progress));
+
+      if (step >= totalSteps) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(currentCount);
+      }
+    }, incrementTime);
+
+    return () => clearInterval(timer);
   }, [value, duration, inView]);
 
   return <span ref={ref}>{formatter(count)}</span>;
