@@ -71,4 +71,15 @@ router.get("/bot/status", async (req, res) => {
   }
 });
 
+router.get("/bot/invite", (req, res) => {
+  const clientId = process.env.DISCORD_CLIENT_ID ?? "";
+  if (!clientId) {
+    res.status(500).json({ error: "Bot client ID not configured" });
+    return;
+  }
+  const permissions = "277025508352"; // Send Messages, Embed Links, Read History, Add Reactions, Use Slash Commands
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=bot%20applications.commands`;
+  res.redirect(url);
+});
+
 export default router;

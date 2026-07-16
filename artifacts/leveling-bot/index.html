@@ -1,24 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Leveling Bot</title>
-    <meta name="description" content="Leveling Bot — built on Replit. Update this description to reflect the app." />
-    <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="Leveling Bot" />
-    <meta property="og:description" content="Leveling Bot — built on Replit. Update this description to reflect the app." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Leveling Bot" />
-    <meta name="twitter:description" content="Leveling Bot — built on Replit. Update this description to reflect the app." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelBot — Level Up Your Discord Server</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="/">
+        <span class="logo-icon">⚡</span>
+        <span>LevelBot</span>
+      </a>
+      <div class="nav-actions">
+        <!-- Logged-out state -->
+        <button class="btn btn-outline" id="loginBtn" onclick="login()" style="display:none">
+          Login with Discord
+        </button>
+        <!-- Logged-in state -->
+        <div class="user-chip" id="userChip" style="display:none">
+          <img class="user-avatar" id="userAvatar" src="" alt="" />
+          <span class="user-name" id="userName"></span>
+          <button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="container">
+      <div class="hero-badge">🎮 Discord Leveling Bot</div>
+      <h1 class="hero-title">Level Up Your<br /><span class="gradient-text">Discord Server</span></h1>
+      <p class="hero-sub">Reward your most active members with XP, leaderboards, and custom role rewards. Simple to set up. Powerful to use.</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary btn-lg" href="/api/bot/invite">
+          <svg width="20" height="20" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.6.7a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.7 37.7 0 0 0 25.5.8a.2.2 0 0 0-.2-.1A58.4 58.4 0 0 0 10.8 4.9C10.7 4.9 10.7 5 10.6 5 1.5 18.7-1 32 .3 45.1v.1a58.8 58.8 0 0 0 17.9 9 .2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4l1.1-.8a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.9a.2.2 0 0 1 0 .3 36 36 0 0 1-5.5 2.6.2.2 0 0 0-.1.3 47 47 0 0 0 3.6 5.9c.1 0 .2.1.3.1a58.6 58.6 0 0 0 17.9-9v-.2C73.5 30.5 70.2 18.5 60.2 5c0-.1-.1-.1-.1-.1ZM23.8 37.3c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 3.9-2.8 7.1-6.4 7.1Zm23.6 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 3.9-2.8 7.1-6.4 7.1Z"/></svg>
+          Add to Server — Free
+        </a>
+        <button class="btn btn-outline btn-lg" id="heroLoginBtn" onclick="login()">Login with Discord</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOT STATUS BAR -->
+  <section class="status-bar">
+    <div class="container">
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="status-indicator-wrap">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-label" id="statusText">Checking…</span>
+          </div>
+          <p class="status-desc">Bot Status</p>
+        </div>
+        <div class="status-card">
+          <span class="status-number" id="guildCount">—</span>
+          <p class="status-desc">Servers</p>
+        </div>
+        <div class="status-card">
+          <span class="status-number" id="userCount">—</span>
+          <p class="status-desc">Members Tracked</p>
+        </div>
+        <div class="status-card">
+          <span class="status-number" id="pingCount">—</span>
+          <p class="status-desc">API Ping</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Everything you need</h2>
+      <p class="section-sub">A complete leveling system built for Discord communities of any size.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>XP & Levels</h3>
+          <p>Members automatically earn XP for every message. Fully customizable XP rates, cooldowns, and level-up messages.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Leaderboards</h3>
+          <p>Real-time server leaderboards show who's the most active. Daily, weekly, and all-time rankings.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎁</div>
+          <h3>Role Rewards</h3>
+          <p>Automatically assign custom roles when members hit level milestones. Keep your community motivated.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Easy Setup</h3>
+          <p>Invite the bot, use <code>/setup</code>, and you're live in under a minute. No coding required.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <h3>Level Notifications</h3>
+          <p>Announce level-ups in any channel or DM users directly. Fully configurable messages.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Server Stats</h3>
+          <p>See your server's activity trends over time. Understand when and how your community is most active.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-glow"></div>
+        <h2>Ready to level up?</h2>
+        <p>Join servers already using LevelBot to grow their communities.</p>
+        <a class="btn btn-primary btn-lg" href="/api/bot/invite">
+          Add LevelBot — It's Free
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <span class="nav-logo" style="margin-bottom:0">
+        <span class="logo-icon">⚡</span>
+        <span>LevelBot</span>
+      </span>
+      <p>© 2025 LevelBot. Not affiliated with Discord Inc.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
 </html>
